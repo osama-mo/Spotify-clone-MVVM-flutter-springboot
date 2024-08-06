@@ -1,10 +1,22 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:fpdart/fpdart.dart';
 import 'package:http/http.dart' as http;
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:spotify_clone/core/constants/server_constant.dart';
+import 'package:spotify_clone/features/auth/model/User.dart';
+
+
+part 'auth_remote_repository.g.dart';
+
+@riverpod
+AuthRemoteRepository authRemoteRepository(AuthRemoteRepositoryRef ref) {
+  return AuthRemoteRepository();
+}
 
 class AuthRemoteRepository {
-  Future<void > login(String username, String password) async {
+  Future<Either<Exception,User>> login(String username, String password) async {
 
 
     try {
@@ -17,21 +29,24 @@ class AuthRemoteRepository {
       "password": password,
     };
     final response = await http.post(
-      Uri.parse("http://192.168.1.82:8080/auth/signin"),
+      Uri.parse("${ServerConstant.BASE_URL}/auth/signin"),
       body: json.encode(body),
       headers: header,
     );
       if (response.statusCode == 200) {
-        log(response.body);
+
+        return right(User.fromJson(response.body));
       } else {
-        log(response.body);
+
+        return left(Exception(response.body));
       }
     } catch (e) {
-      log(e.toString());
+
+      return left(Exception(e.toString()));
     }
   }
 
-  Future<Map<String,dynamic>> signup(
+  Future<Either<Exception,User>> signup(
       {required String name,
       required String email,
       required String password}) async {
@@ -50,21 +65,19 @@ class AuthRemoteRepository {
     };
 
     final response = await http.post(
-      Uri.parse("http://192.168.1.82:8080/auth/signup"),
+      Uri.parse("${ServerConstant.BASE_URL}/auth/signup"),
       body: json.encode(body),
       headers: header,
     );
-    log(response.body);
-    log(response.statusCode.toString());
 
-      if (response.statusCode == 201) {
-        throw '';
+
+      if (response.statusCode == 200) {
+        return right(User.fromJson(response.body));
       } else {
-        final user = jsonDecode(response.body) as Map<String, dynamic>;
-        return user;
+        return left(Exception(response.body));
       }
     } catch (e) {
-      throw '';
+      return left(Exception(e.toString()));
     }
   }
 }

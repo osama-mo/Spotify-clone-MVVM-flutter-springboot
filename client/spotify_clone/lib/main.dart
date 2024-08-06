@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:spotify_clone/features/home/view/pages/signin_page.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:spotify_clone/features/auth/view/pages/signin_page.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    const ProviderScope(
+    child: const MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -21,4 +25,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
