@@ -1,18 +1,24 @@
 import 'package:flutter/material.dart';
 
-class AuthField extends StatelessWidget {
+class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
   final String hintText;
   final bool isObscure;
-  const AuthField({Key? key
+  final VoidCallback? onTap;
+  final isReadOnly;
+  const CustomTextField({Key? key
   , required this.hintText
   , required this.controller
   , this.isObscure = false
+  , this.onTap
+  , this.isReadOnly = false
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+          readOnly: isReadOnly,
+          onTap: onTap,
           decoration: InputDecoration(
             hintText: hintText,
           ),

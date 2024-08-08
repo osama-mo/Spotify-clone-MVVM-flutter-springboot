@@ -4,11 +4,13 @@ class User {
   String name;
   int id;
   String email;
+  String? token;
 
   User({
     required this.name,
     required this.id,
     required this.email,
+    required this.token,
   });
 
 
@@ -23,6 +25,7 @@ class User {
       name: name ?? this.name,
       id: id ?? this.id,
       email: email ?? this.email,
+      token: token ?? this.token,
     );
   }
 
@@ -39,6 +42,7 @@ class User {
       name: map['name'] ?? '',
       id: map['id'] ?? 0,
       email: map['username'] ?? '',
+      token: map['token'] ?? '',
     );
   }
 
@@ -47,7 +51,7 @@ class User {
   factory User.fromJson(String source) => User.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
-  String toString() => 'User(name: $name, id: $id, email: $email)';
+  String toString() => 'User(name: $name, id: $id, email: $email, token: $token)';
 
   @override
   bool operator ==(covariant User other) {

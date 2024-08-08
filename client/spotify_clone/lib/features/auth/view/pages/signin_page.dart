@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:spotify_clone/features/home/view/pages/home_page.dart';
 
 import '../../../../core/theme/app_pallete.dart';
 import '../../../../core/widgets/Loader.dart';
 import '../../repositories/auth_remote_repository.dart';
 import '../../viewmodel/auth_viewmodel.dart';
-import '../widgets/auth_field.dart';
+import '../../../../core/widgets/CustomTextField.dart';
 import '../widgets/auth_gradient_button.dart';
 import 'signup_page.dart';
 
@@ -32,15 +33,22 @@ class _SignInPageState extends ConsumerState<SignInPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isLoading = ref.watch(authViewModelProvider)?.isLoading == true;
+    final isLoading =
+        ref.watch(authViewModelProvider.select((val) => val.isLoading == true));
 
-
-    ref.listen(authViewModelProvider, (_,state) {
-         state?.when(data: (data) {
-           Navigator.push(context, MaterialPageRoute(builder:(c) => const SignUpPage()));
-         }, error: (error, _) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.toString())));
-         }, loading: (){});
+    ref.listen(authViewModelProvider, (_, state) {
+      state?.when(
+          data: (data) {
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (c) => HomePage()),
+                (route) => false);
+          },
+          error: (error, _) {
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text(error.toString())));
+          },
+          loading: () {});
     });
 
     return Scaffold(
@@ -59,12 +67,12 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                           TextStyle(fontSize: 50, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 30),
-                    AuthField(
+                    CustomTextField(
                       hintText: 'Email',
                       controller: emailController,
                     ),
                     const SizedBox(height: 15),
-                    AuthField(
+                    CustomTextField(
                       hintText: 'Password',
                       controller: passwordController,
                       isObscure: true,

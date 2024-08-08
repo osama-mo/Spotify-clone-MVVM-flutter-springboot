@@ -7,7 +7,7 @@ import 'package:spotify_clone/features/auth/repositories/auth_remote_repository.
 
 import '../../../../core/theme/app_pallete.dart';
 import '../../viewmodel/auth_viewmodel.dart';
-import '../widgets/auth_field.dart';
+import '../../../../core/widgets/CustomTextField.dart';
 import '../widgets/auth_gradient_button.dart';
 import 'signin_page.dart';
 
@@ -36,7 +36,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isLoading = ref.watch(authViewModelProvider)?.isLoading == true;
+    final isLoading = ref.watch(authViewModelProvider.select((val) => val.isLoading == true ));
 
     ref.listen(authViewModelProvider, (_,state) {
          state?.when(data: (data) {
@@ -63,21 +63,21 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                       const SizedBox(
                         height: 30,
                       ),
-                      AuthField(
+                      CustomTextField(
                         hintText: 'Name',
                         controller: nameController,
                       ),
                       const SizedBox(
                         height: 15,
                       ),
-                      AuthField(
+                      CustomTextField(
                         hintText: 'Email',
                         controller: emailController,
                       ),
                       const SizedBox(
                         height: 15,
                       ),
-                      AuthField(
+                      CustomTextField(
                         hintText: 'Password',
                         controller: passwordController,
                         isObscure: true,

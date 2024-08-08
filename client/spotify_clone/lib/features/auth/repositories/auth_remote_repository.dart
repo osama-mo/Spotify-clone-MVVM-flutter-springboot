@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:spotify_clone/core/constants/server_constant.dart';
 import 'package:spotify_clone/features/auth/model/User.dart';
+import 'package:spotify_clone/features/auth/repositories/auth_local_repository.dart';
 
 
 part 'auth_remote_repository.g.dart';
@@ -16,6 +17,36 @@ AuthRemoteRepository authRemoteRepository(AuthRemoteRepositoryRef ref) {
 }
 
 class AuthRemoteRepository {
+
+  Future<Either<Exception,User>> getCurrentUserData(String token) async {
+
+
+    try {
+      Map<String, String> header = {
+      'Content-type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization' : 'Bearer $token'
+    };
+    final response = await http.get(
+      Uri.parse("${ServerConstant.BASE_URL}/user"),
+      headers: header,
+    );
+    
+
+      if (response.statusCode == 200) {
+
+        return right(User.fromJson(response.body));
+      } else {
+
+        return left(Exception(response.body));
+      }
+    } catch (e) {
+
+      return left(Exception(e.toString()));
+    }
+  }
+
+
   Future<Either<Exception,User>> login(String username, String password) async {
 
 
