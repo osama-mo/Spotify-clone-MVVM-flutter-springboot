@@ -5,6 +5,9 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:spotify_clone/core/widgets/Loader.dart';
+import '../../../../features/home/viewmodel/home_viewmodel.dart'; // Add this line to import the file that defines 'homeViewModelProvider'
+
 import 'package:spotify_clone/core/theme/app_pallete.dart';
 import 'package:spotify_clone/features/home/view/widgets/audio_wave.dart';
 
@@ -22,6 +25,7 @@ class _UploadSongPageState extends ConsumerState<UploadSongPage> {
   Color currentColor = Colors.white;
   File? coverArt;
   File? song;
+  final formKey = GlobalKey<FormState>();
 
   void _pickSong() async {
     final file = await pickAudioFile();
@@ -50,86 +54,116 @@ class _UploadSongPageState extends ConsumerState<UploadSongPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isLoading = ref
+        .watch(homeViewmodelProvider.select((val) => val?.isLoading == true));
     return Scaffold(
         appBar: AppBar(
           title: Text('Upload Song'),
           actions: [
             IconButton(
               icon: Icon(Icons.upload),
-              onPressed: () {},
+              onPressed: () async {
+                if (formKey.currentState!.validate() &&
+                    song != null &&
+                    coverArt != null) {
+                  ref.read(homeViewmodelProvider.notifier).uploadSong(
+                        selectedAudio: song!,
+                        selectedThumbnail: coverArt!,
+                        songName: _songTitleController.text,
+                        artist: _artistController.text,
+                        color: currentColor,
+                      );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Please fill all the fields'),
+                    ),
+                  );
+                }
+              },
             )
           ],
         ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              children: [
-                GestureDetector(
-                  onTap: _pickCoverArt,
-                  child: coverArt != null
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: SizedBox(
-                            height: 150,
-                            width: double.infinity,
-                            child: Image.file(coverArt!, fit: BoxFit.cover),
-                          ),
-                        )
-                      : DottedBorder(
-                          color: AppPallete.borderColor,
-                          strokeWidth: 2,
-                          borderType: BorderType.RRect,
-                          radius: Radius.circular(12),
-                          padding: EdgeInsets.all(6),
-                          child: const SizedBox(
-                            height: 150,
-                            width: double.infinity,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.folder_open, size: 50),
-                                SizedBox(height: 10),
-                                Text(
-                                  'Select the Cover Art',
-                                  style: TextStyle(fontSize: 20),
+        body: isLoading
+            ? Loader()
+            : SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Form(
+                    key: formKey,
+                    child: Column(
+                      children: [
+                        GestureDetector(
+                          onTap: _pickCoverArt,
+                          child: coverArt != null
+                              ? ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: SizedBox(
+                                    height: 150,
+                                    width: double.infinity,
+                                    child: Image.file(coverArt!,
+                                        fit: BoxFit.cover),
+                                  ),
                                 )
-                              ],
-                            ),
-                          )),
+                              : DottedBorder(
+                                  color: AppPallete.borderColor,
+                                  strokeWidth: 2,
+                                  borderType: BorderType.RRect,
+                                  radius: Radius.circular(12),
+                                  padding: EdgeInsets.all(6),
+                                  child: const SizedBox(
+                                    height: 150,
+                                    width: double.infinity,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(Icons.folder_open, size: 50),
+                                        SizedBox(height: 10),
+                                        Text(
+                                          'Select the Cover Art',
+                                          style: TextStyle(fontSize: 20),
+                                        )
+                                      ],
+                                    ),
+                                  )),
+                        ),
+                        SizedBox(height: 30),
+                        song != null
+                            ? AudioWave(path: song!.path)
+                            : CustomTextField(
+                                hintText: 'Pick Song',
+                                controller: TextEditingController(),
+                                isReadOnly: true,
+                                onTap: () {
+                                  _pickSong();
+                                },
+                              ),
+                        SizedBox(height: 30),
+                        CustomTextField(
+                          hintText: 'Artist',
+                          controller: _artistController,
+                        ),
+                        SizedBox(height: 30),
+                        CustomTextField(
+                          hintText: 'Song title',
+                          controller: _songTitleController,
+                        ),
+                        SizedBox(height: 30),
+                        ColorPicker(
+                            pickersEnabled: {
+                              ColorPickerType.wheel: true,
+                            },
+                            onColorChanged: (Color color) {
+                              log(color.toString());
+                              setState(() {
+                                currentColor = color;
+                              });
+                            }),
+                      ],
+                    ),
+                  ),
                 ),
-                SizedBox(height: 30),
-                song != null
-                    ? AudioWave(path: song!.path)
-                    : CustomTextField(
-                        hintText: 'Pick Song',
-                        controller: TextEditingController(),
-                        isReadOnly: true,
-                        onTap: () {
-                          _pickSong();
-                        },
-                      ),
-                SizedBox(height: 30),
-                CustomTextField(
-                  hintText: 'Artist',
-                  controller: _artistController,
-                ),
-                SizedBox(height: 30),
-                CustomTextField(
-                  hintText: 'Song title',
-                  controller: _songTitleController,
-                ),
-                SizedBox(height: 30),
-                ColorPicker(
-                    pickersEnabled: {
-                      ColorPickerType.wheel: true,
-                    },
-                    onColorChanged: (Color color) {
-                      log(color.toString());
-                    }),
-              ],
-            ),
-          ),
-        ));
+              ));
   }
 }

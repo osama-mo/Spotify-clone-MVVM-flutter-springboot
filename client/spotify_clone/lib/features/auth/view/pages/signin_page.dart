@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:spotify_clone/features/home/view/pages/home_page.dart';
+import 'package:spotify_clone/features/home/view/pages/upload_song_page.dart';
 
 import '../../../../core/theme/app_pallete.dart';
 import '../../../../core/widgets/Loader.dart';
