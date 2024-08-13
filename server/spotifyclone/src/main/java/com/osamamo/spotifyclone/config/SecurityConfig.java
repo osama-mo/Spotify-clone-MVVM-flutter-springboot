@@ -17,7 +17,7 @@ public class SecurityConfig {
         return httpSecurity
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/signup", "/auth/signin","/user","/songs/upload", "/songs/getAll").permitAll()
+                        .requestMatchers("/auth/signup", "/auth/signin","/user","/songs/upload", "/songs/*","/songs/coverArt/*").permitAll()
 //                        .requestMatchers().authenticated()
                         .anyRequest().authenticated()
                 )

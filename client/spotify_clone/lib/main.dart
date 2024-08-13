@@ -36,7 +36,7 @@ class MyApp extends ConsumerWidget {
     log(currnetUser.toString());
     return MaterialApp(
         title: 'Spotify Clone',
-        theme: AppTheme.lightTheme,
+        theme: AppTheme.darkThemeMode,
         home: currnetUser == null
             ?  const SignInPage()
             :  HomePage());

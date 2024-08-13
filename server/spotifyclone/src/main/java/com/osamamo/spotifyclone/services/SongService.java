@@ -5,6 +5,8 @@ import com.osamamo.spotifyclone.model.Song;
 import com.osamamo.spotifyclone.repository.SongRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.mongodb.gridfs.GridFsOperations;
+import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class SongService {
@@ -26,13 +29,18 @@ public class SongService {
         this.rootLocation = Paths.get(uploadDir);
         this.songRepository = songRepository;
     }
+    @Autowired
+    private GridFsOperations operations;
+
+    @Autowired
+    private GridFsTemplate gridFsTemplate;
 
     public Song saveSong(UploadSongRequest request) throws IOException {
-        // Save the cover art
-        String coverArtPath = saveFile(request.getCoverArt());
+        // Save the cover art in GridFS
+        String coverArtFileId = saveFileToGridFS(request.getCoverArt(), "coverArt");
 
-        // Save the song file
-        String songFilePath = saveFile(request.getSongFile());
+        // Save the song file in GridFS
+        String songFileId = saveFileToGridFS(request.getSongFile(), "songFile");
 
         // Create and save the Song entity
         Song song = new Song();
@@ -40,23 +48,14 @@ public class SongService {
         song.setArtist(request.getArtist());
         song.setHexCode(request.getHexCode());
         song.setUploadedBy(request.getUploadedBy());
-        song.setCoverArtPath(coverArtPath);
-        song.setSongFilePath(songFilePath);
+        song.setCoverArtPath(coverArtFileId);
+        song.setSongFilePath(songFileId);
 
         return songRepository.save(song);
     }
 
-    private String saveFile(MultipartFile file) throws IOException {
-        if (file.isEmpty()) {
-            throw new IOException("Failed to store empty file.");
-        }
-        String filename = System.currentTimeMillis() + "-" + file.getOriginalFilename();
-        Path destinationFile = this.rootLocation.resolve(Paths.get(filename))
-                .normalize().toAbsolutePath();
-
-        Files.copy(file.getInputStream(), destinationFile);
-
-        return destinationFile.toString();
+    private String saveFileToGridFS(MultipartFile file, String fileType) throws IOException {
+        return Objects.requireNonNull(gridFsTemplate.store(file.getInputStream(), file.getOriginalFilename(), file.getContentType())).toString();
     }
 
     public List<Song> getAllSongs() {
