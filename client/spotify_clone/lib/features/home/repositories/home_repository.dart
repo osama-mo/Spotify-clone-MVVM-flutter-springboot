@@ -1,9 +1,12 @@
+import 'dart:developer';
 import 'dart:io';
+
 
 import 'package:fpdart/fpdart.dart';
 import 'package:http/http.dart' as http;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:spotify_clone/core/constants/server_constant.dart';
+import 'package:spotify_clone/features/home/model/Song.dart';
 
 import '../../../core/providers/current_user_notifier.dart';
 
@@ -14,11 +17,7 @@ HomeRepository homeRepository(HomeRepositoryRef ref) {
   return HomeRepository();
 }
 
-
-
-
 class HomeRepository {
-
   Future<Either<Exception, String>> uploadSong({
     required File selectedAudio,
     required File selectedThumbnail,
@@ -61,6 +60,35 @@ class HomeRepository {
 
       return Right(await res.stream.bytesToString());
     } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<Either<Exception, List<Song>>> getAllSongs({
+    required String token,
+  }) async {
+    
+    try {
+      final res = await http.get(
+        Uri.parse('${ServerConstant.BASE_URL}/songs/getAll'),
+        headers: {
+          'Authorization': "Bearer $token",
+        },
+      );
+      
+
+      if (res.statusCode != 200) {
+        return Left(Exception(res.body));
+      }
+      log(res.body.runtimeType.toString());
+      
+      
+      
+      List<Song> songs = Song.fromJsonList(res.body);
+    
+      return Right(songs);
+    } catch (e) {
+      
       throw Exception(e.toString());
     }
   }

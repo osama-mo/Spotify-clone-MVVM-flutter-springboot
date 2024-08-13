@@ -34,8 +34,8 @@ class AuthRemoteRepository {
     
 
       if (response.statusCode == 200) {
-
-        return right(User.fromJson(response.body));
+        
+        return right(User.fromJson(response.body).copyWith(token: token));
       } else {
 
         return left(Exception(response.body));

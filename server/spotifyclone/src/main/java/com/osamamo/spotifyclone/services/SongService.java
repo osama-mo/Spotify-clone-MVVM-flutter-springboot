@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 @Service
 public class SongService {
@@ -56,5 +57,9 @@ public class SongService {
         Files.copy(file.getInputStream(), destinationFile);
 
         return destinationFile.toString();
+    }
+
+    public List<Song> getAllSongs() {
+        return songRepository.findAll();
     }
 }

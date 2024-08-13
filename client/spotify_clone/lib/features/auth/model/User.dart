@@ -4,7 +4,7 @@ class User {
   String name;
   int id;
   String email;
-  String? token;
+  String token;
 
   User({
     required this.name,
@@ -20,6 +20,7 @@ class User {
     String? name,
     int? id,
     String? email,
+    String? token,
   }) {
     return User(
       name: name ?? this.name,
@@ -34,6 +35,7 @@ class User {
       'name': name,
       'id': id,
       'email': email,
+      'token': token,
     };
   }
 
@@ -61,6 +63,7 @@ class User {
       other.name == name &&
       other.id == id &&
       other.email == email;
+      other.token == token;
   }
 
   @override

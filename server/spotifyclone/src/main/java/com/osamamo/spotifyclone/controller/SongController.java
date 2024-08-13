@@ -15,6 +15,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/songs")
@@ -49,5 +50,22 @@ public class SongController {
         } catch (IOException e) {
             return ResponseEntity.status(500).body("Failed to upload song: " + e.getMessage());
         }
+    }
+    @GetMapping("/getAll")
+    public ResponseEntity<?> getSongs(@RequestHeader("Authorization") String token) {
+        // Validate and extract user from token
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid JWT token format");
+        }
+
+        if (!jwtUtils.validateJwtToken(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid JWT token");
+        }
+
+
+        List<Song> songs = songService.getAllSongs();
+        return ResponseEntity.ok(songs);
     }
 }

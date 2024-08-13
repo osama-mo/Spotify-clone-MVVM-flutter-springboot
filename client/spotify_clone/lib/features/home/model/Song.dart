@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'dart:convert';
 
 
@@ -54,8 +56,8 @@ class Song {
       artist: map['artist'] as String,
       hexCode: map['hexCode'] as String,
       uploadedBy: map['uploadedBy'] as String,
-      thumbnail_url: map['thumbnail_url'] as String,
-      song_url: map['song_url'] as String,
+      thumbnail_url: map['coverArtPath'] as String,
+      song_url: map['songFilePath'] as String,
     );
   }
 
@@ -89,5 +91,16 @@ class Song {
       uploadedBy.hashCode ^
       thumbnail_url.hashCode ^
       song_url.hashCode;
+  }
+
+
+  static List<Song> fromJsonList(String jsonList) {
+    List<Song> songs = [];
+    List<dynamic> list = json.decode(jsonList);
+    list.forEach((element) {
+      songs.add(Song.fromMap(element));
+    });
+    return songs;
+  
   }
 }

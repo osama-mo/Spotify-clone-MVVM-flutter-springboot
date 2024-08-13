@@ -4,12 +4,27 @@ import 'dart:developer';
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:fpdart/fpdart.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:spotify_clone/features/home/repositories/home_repository.dart';
 
 import '../../../core/providers/current_user_notifier.dart';
+import '../model/Song.dart';
 
 part 'home_viewmodel.g.dart';
+
+@riverpod
+Future<List<Song>> getAllSongs(GetAllSongsRef ref) async {
+  final token = ref.watch(currentUserNotifierProvider)!.token;
+  
+  final res = await ref.read(homeRepositoryProvider).getAllSongs(token: token ?? '');
+  
+  return switch (res) {
+    Left(value : final l) => throw l,
+    Right(value : final r) => r
+  };
+  
+}
 
 @riverpod
 class HomeViewmodel extends _$HomeViewmodel {
