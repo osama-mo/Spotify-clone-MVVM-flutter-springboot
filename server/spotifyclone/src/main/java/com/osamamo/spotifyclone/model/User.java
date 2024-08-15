@@ -5,6 +5,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.HashSet;
+import java.util.Set;
+
 
 @Document(collection = "users")
 public class User {
@@ -24,6 +27,9 @@ public class User {
     @NotBlank
     @Size(max = 100)
     private String password;
+
+
+    private Set<String> favoriteSongIds = new HashSet<>();
 
     public @NotBlank @Size(max = 50) String getUsername() {
         return username;
@@ -55,5 +61,13 @@ public class User {
 
     public void setName(@NotBlank @Size(max = 50) String name) {
         this.name = name;
+    }
+
+    public Set<String> getFavoriteSongIds() {
+        return favoriteSongIds;
+    }
+
+    public void setFavoriteSongIds(Set<String> favoriteSongIds) {
+        this.favoriteSongIds = favoriteSongIds;
     }
 }

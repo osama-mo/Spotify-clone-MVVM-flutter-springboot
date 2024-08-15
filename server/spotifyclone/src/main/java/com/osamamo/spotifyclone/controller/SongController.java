@@ -7,6 +7,7 @@ package com.osamamo.spotifyclone.controller;
 import com.osamamo.spotifyclone.dto.UploadSongRequest;
 import com.osamamo.spotifyclone.model.Song;
 import com.osamamo.spotifyclone.security.JwtUtils;
+import com.osamamo.spotifyclone.services.FavoriteSongService;
 import com.osamamo.spotifyclone.services.SongService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.gridfs.GridFsOperations;
@@ -36,6 +37,9 @@ public class SongController {
 
     @Autowired
     private JwtUtils jwtUtils;
+
+    @Autowired
+    private FavoriteSongService favoriteSongService;
 
     @Autowired
     private GridFsOperations operations;
@@ -100,6 +104,61 @@ public class SongController {
 
         List<Song> songs = songService.getAllSongs();
         return ResponseEntity.ok(songs);
+    }
+
+
+    @PostMapping("/favorite/{songId}")
+    public ResponseEntity<?> addFavoriteSong(@RequestHeader("Authorization") String token, @PathVariable String songId) {
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid JWT token format");
+        }
+
+        if (!jwtUtils.validateJwtToken(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid JWT token");
+        }
+
+        String username = jwtUtils.getUserNameFromJwtToken(token);
+        favoriteSongService.addFavoriteSong(username, songId);
+
+        return ResponseEntity.ok("Song added to favorites");
+    }
+
+    @DeleteMapping("/favorite/{songId}")
+    public ResponseEntity<?> removeFavoriteSong(@RequestHeader("Authorization") String token, @PathVariable String songId) {
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid JWT token format");
+        }
+
+        if (!jwtUtils.validateJwtToken(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid JWT token");
+        }
+
+        String username = jwtUtils.getUserNameFromJwtToken(token);
+        favoriteSongService.removeFavoriteSong(username, songId);
+
+        return ResponseEntity.ok("Song removed from favorites");
+    }
+
+    @GetMapping("/favorites")
+    public ResponseEntity<List<Song>> getFavoriteSongs(@RequestHeader("Authorization") String token) {
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+
+        if (!jwtUtils.validateJwtToken(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+
+        String username = jwtUtils.getUserNameFromJwtToken(token);
+        List<Song> favoriteSongs = favoriteSongService.getFavoriteSongs(username);
+
+        return ResponseEntity.ok(favoriteSongs);
     }
 }
 

@@ -1,5 +1,3 @@
-
-
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -8,6 +6,7 @@ import 'package:spotify_clone/core/theme/app_pallete.dart';
 import 'package:spotify_clone/features/home/repositories/home_repository.dart';
 import 'package:spotify_clone/features/home/view/pages/library_page.dart';
 import 'package:spotify_clone/features/home/view/pages/songs_page.dart';
+import 'package:spotify_clone/features/home/view/widgets/music_slab.dart';
 
 import '../../../../core/providers/current_user_notifier.dart';
 
@@ -17,25 +16,27 @@ class HomePage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePage> {
-
   HomeRepository homeRepository = HomeRepository();
   int _selectedIndex = 0;
-  final pages = [
-    SongsPage(),
-    LibraryPage()
-  ];
+  final pages = [SongsPage(), LibraryPage()];
   @override
   Widget build(BuildContext context) {
     final currentUser = ref.watch(currentUserNotifierProvider);
     return Scaffold(
-      body: pages[_selectedIndex],
+      body: Stack(
+        children: [
+          pages[_selectedIndex],
+          Positioned(
+            bottom: 0,
+            child: MusicSlab(),
+          ),
+        ],
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: (index) {
           setState(() {
-           
             _selectedIndex = index;
-            
           });
         },
         items: [

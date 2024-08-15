@@ -5,12 +5,14 @@ class User {
   String id;
   String email;
   String token;
+  List<String> favoriteSongs;
 
   User({
     required this.name,
     required this.id,
     required this.email,
     required this.token,
+    required this.favoriteSongs,
   });
 
 
@@ -21,12 +23,14 @@ class User {
      String? id,
     String? email,
     String? token,
+    List<String>? favoriteSongs,
   }) {
     return User(
       name: name ?? this.name,
       id: id ?? this.id,
       email: email ?? this.email,
       token: token ?? this.token,
+      favoriteSongs: favoriteSongs ?? this.favoriteSongs,
     );
   }
 
@@ -36,6 +40,7 @@ class User {
       'id': id,
       'email': email,
       'token': token,
+      'favoriteSongIds': favoriteSongs,
     };
   }
 
@@ -45,6 +50,7 @@ class User {
       id: map['id'] ?? 0,
       email: map['username'] ?? '',
       token: map['token'] ?? '',
+      favoriteSongs: map['favoriteSongIds'] ?? [],
     );
   }
 
@@ -59,11 +65,8 @@ class User {
   bool operator ==(covariant User other) {
     if (identical(this, other)) return true;
   
-    return 
-      other.name == name &&
-      other.id == id &&
-      other.email == email;
-      other.token == token;
+    return other.id == id;
+      
   }
 
   @override

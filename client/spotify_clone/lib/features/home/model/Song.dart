@@ -4,6 +4,7 @@ import 'dart:convert';
 
 
 class Song {
+  final String id;
   final String title;
   final String artist;
   final String hexCode;
@@ -12,6 +13,7 @@ class Song {
   final String song_url;
 
   Song({
+      required this.id,
       required this.title,
       required this.artist,
       required this.hexCode,
@@ -22,6 +24,7 @@ class Song {
 
 
   Song copyWith({
+    String? id,
     String? title,
     String? artist,
     String? hexCode,
@@ -30,6 +33,7 @@ class Song {
     String? song_url,
   }) {
     return Song(
+      id: id ?? this.id,
       title: title ?? this.title,
       artist: artist ?? this.artist,
       hexCode: hexCode ?? this.hexCode,
@@ -41,17 +45,19 @@ class Song {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
+      'id': id,
       'title': title,
       'artist': artist,
       'hexCode': hexCode,
       'uploadedBy': uploadedBy,
-      'thumbnail_url': thumbnail_url,
-      'song_url': song_url,
+      'coverArtPath': thumbnail_url,
+      'songFilePath': song_url,
     };
   }
 
   factory Song.fromMap(Map<String, dynamic> map) {
     return Song(
+      id: map['id'] as String,
       title: map['title'] as String,
       artist: map['artist'] as String,
       hexCode: map['hexCode'] as String,

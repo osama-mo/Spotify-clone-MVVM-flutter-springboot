@@ -2,6 +2,10 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:just_audio_background/just_audio_background.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:spotify_clone/core/providers/current_user_notifier.dart';
 import 'package:spotify_clone/core/theme/theme.dart';
 import 'package:spotify_clone/features/auth/view/pages/signin_page.dart';
@@ -16,7 +20,14 @@ void main() async {
  
   await container.read(authViewModelProvider.notifier).init();
   await container.read(authViewModelProvider.notifier).getData();
+  await Hive.initFlutter();
+  await Hive.openBox("home");
   
+  await JustAudioBackground.init(
+    androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
+    androidNotificationChannelName: 'Audio playback',
+    androidNotificationOngoing: true,
+  );
   
   runApp(
     UncontrolledProviderScope(
@@ -31,6 +42,7 @@ class MyApp extends ConsumerWidget {
  
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+   
     
     final currnetUser = ref.watch(currentUserNotifierProvider);
     log(currnetUser.toString());

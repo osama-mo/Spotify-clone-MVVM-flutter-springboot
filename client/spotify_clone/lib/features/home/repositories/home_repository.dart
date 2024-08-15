@@ -80,7 +80,7 @@ class HomeRepository {
       if (res.statusCode != 200) {
         return Left(Exception(res.body));
       }
-      log(res.body.runtimeType.toString());
+      
       
       
       
@@ -89,6 +89,80 @@ class HomeRepository {
       return Right(songs);
     } catch (e) {
       
+      throw Exception(e.toString());
+    }
+  }
+
+
+  Future<Either<Exception, List<Song>>> getAllFavorite({
+    required String token,
+  }) async {
+
+    try {
+      final res = await http.get(
+        Uri.parse('${ServerConstant.BASE_URL}/songs/favorites'),
+        headers: {
+          'Authorization': "Bearer $token",
+        },
+      );
+      
+
+      if (res.statusCode != 200) {
+        return Left(Exception(res.body));
+      }
+      
+      
+      
+      
+      List<Song> songs = Song.fromJsonList(res.body);
+    
+      return Right(songs);
+    } catch (e) {
+      
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<Either<Exception, String>> favoriteSong({
+    required String songId,
+    required String token,
+  }) async {
+    try {
+      final res = await http.post(
+        Uri.parse('${ServerConstant.BASE_URL}/songs/favorite/$songId'),
+        headers: {
+          'Authorization': "Bearer $token",
+        },
+      );
+
+      if (res.statusCode != 200) {
+        return Left(Exception(res.body));
+      }
+
+      return Right(res.body);
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<Either<Exception, String>> unFavoriteSong({
+    required String songId,
+    required String token,
+  }) async {
+    try {
+      final res = await http.delete(
+        Uri.parse('${ServerConstant.BASE_URL}/songs/favorite/$songId'),
+        headers: {
+          'Authorization': "Bearer $token",
+        },
+      );
+
+      if (res.statusCode != 200) {
+        return Left(Exception(res.body));
+      }
+
+      return Right(res.body);
+    } catch (e) {
       throw Exception(e.toString());
     }
   }
