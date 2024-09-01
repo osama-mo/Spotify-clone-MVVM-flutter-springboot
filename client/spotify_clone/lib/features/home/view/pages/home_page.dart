@@ -9,6 +9,7 @@ import 'package:spotify_clone/features/home/view/pages/songs_page.dart';
 import 'package:spotify_clone/features/home/view/widgets/music_slab.dart';
 
 import '../../../../core/providers/current_user_notifier.dart';
+import 'search_page.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   @override
@@ -18,7 +19,7 @@ class HomePage extends ConsumerStatefulWidget {
 class _HomePageState extends ConsumerState<HomePage> {
   HomeRepository homeRepository = HomeRepository();
   int _selectedIndex = 0;
-  final pages = [SongsPage(), LibraryPage()];
+  final pages = [SongsPage(),SearchPage(), LibraryPage()];
   @override
   Widget build(BuildContext context) {
     final currentUser = ref.watch(currentUserNotifierProvider);
@@ -51,8 +52,18 @@ class _HomePageState extends ConsumerState<HomePage> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Image.asset('assets/images/library.png',
+            icon: Image.asset(
+                _selectedIndex == 1
+                    ? 'assets/images/search_filled.png'
+                    : 'assets/images/search_unfilled.png',
                 color: _selectedIndex == 1
+                    ? AppPallete.whiteColor
+                    : AppPallete.greyColor),
+            label: 'Search',
+          ),
+          BottomNavigationBarItem(
+            icon: Image.asset('assets/images/library.png',
+                color: _selectedIndex == 2
                     ? AppPallete.whiteColor
                     : AppPallete.greyColor),
             label: 'Library',

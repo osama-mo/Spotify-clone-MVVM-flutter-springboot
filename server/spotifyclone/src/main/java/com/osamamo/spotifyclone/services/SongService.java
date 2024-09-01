@@ -58,6 +58,10 @@ public class SongService {
         return Objects.requireNonNull(gridFsTemplate.store(file.getInputStream(), file.getOriginalFilename(), file.getContentType())).toString();
     }
 
+    public List<Song> searchSongs(String query) {
+        return songRepository.searchByTitleOrArtist(query);
+    }
+
     public List<Song> getAllSongs() {
         return songRepository.findAll();
     }

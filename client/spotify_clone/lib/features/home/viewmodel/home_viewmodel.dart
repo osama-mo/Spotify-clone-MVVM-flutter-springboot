@@ -4,11 +4,13 @@ import 'dart:ui';
 
 import 'package:fpdart/fpdart.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:spotify_clone/core/providers/current_searchterm_notifier.dart';
 import 'package:spotify_clone/features/home/repositories/home_local_repository.dart';
 import 'package:spotify_clone/features/home/repositories/home_repository.dart';
 
 import '../../../core/providers/current_user_notifier.dart';
 import '../model/Song.dart';
+import '../view/pages/search_page.dart';
 
 part 'home_viewmodel.g.dart';
 
@@ -31,6 +33,21 @@ Future<List<Song>> getFavoriteSongs(GetFavoriteSongsRef ref) async {
 
   final res = await ref.read(homeRepositoryProvider).getAllFavorite(
         token: token ?? '',
+      );
+
+  return switch (res) {
+    Left(value: final l) => throw l,
+    Right(value: final r) => r
+  };
+}
+
+@riverpod
+Future<List<Song>> getSearchSongsResult(GetSearchSongsResultRef ref) async {
+  final token = ref.watch(currentUserNotifierProvider)!.token;
+  log("tk");
+  final res = await ref.read(homeRepositoryProvider).searchSongs(
+        ref.watch(currentSearchTermNotifierProvider.notifier).state,
+        token,
       );
 
   return switch (res) {
@@ -120,4 +137,6 @@ class HomeViewmodel extends _$HomeViewmodel {
 
     return state = AsyncValue.data(null);
   }
+
+  
 }

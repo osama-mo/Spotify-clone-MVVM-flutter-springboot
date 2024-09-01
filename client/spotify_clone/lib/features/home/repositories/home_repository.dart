@@ -1,7 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
 
-
 import 'package:fpdart/fpdart.dart';
 import 'package:http/http.dart' as http;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -67,7 +66,6 @@ class HomeRepository {
   Future<Either<Exception, List<Song>>> getAllSongs({
     required String token,
   }) async {
-    
     try {
       final res = await http.get(
         Uri.parse('${ServerConstant.BASE_URL}/songs/getAll'),
@@ -75,29 +73,22 @@ class HomeRepository {
           'Authorization': "Bearer $token",
         },
       );
-      
 
       if (res.statusCode != 200) {
         return Left(Exception(res.body));
       }
-      
-      
-      
-      
+
       List<Song> songs = Song.fromJsonList(res.body);
-    
+
       return Right(songs);
     } catch (e) {
-      
       throw Exception(e.toString());
     }
   }
 
-
   Future<Either<Exception, List<Song>>> getAllFavorite({
     required String token,
   }) async {
-
     try {
       final res = await http.get(
         Uri.parse('${ServerConstant.BASE_URL}/songs/favorites'),
@@ -105,20 +96,15 @@ class HomeRepository {
           'Authorization': "Bearer $token",
         },
       );
-      
 
       if (res.statusCode != 200) {
         return Left(Exception(res.body));
       }
-      
-      
-      
-      
+
       List<Song> songs = Song.fromJsonList(res.body);
-    
+
       return Right(songs);
     } catch (e) {
-      
       throw Exception(e.toString());
     }
   }
@@ -162,6 +148,29 @@ class HomeRepository {
       }
 
       return Right(res.body);
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<Either<Exception, List<Song>>> searchSongs(
+      String? searchTerm, String token) async {
+    try {
+      log('searchTerm: $searchTerm');
+      final res = await http.get(
+        Uri.parse('${ServerConstant.BASE_URL}/songs/search?query=$searchTerm'),
+        headers: {
+          'Authorization': "Bearer $token",
+        },
+      );
+
+      if (res.statusCode != 200) {
+        return Left(Exception(res.body));
+      }
+
+      List<Song> songs = Song.fromJsonList(res.body);
+      
+      return Right(songs);
     } catch (e) {
       throw Exception(e.toString());
     }

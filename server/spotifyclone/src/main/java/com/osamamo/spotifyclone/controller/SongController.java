@@ -160,6 +160,20 @@ public class SongController {
 
         return ResponseEntity.ok(favoriteSongs);
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<Song>> searchSongs(@RequestParam(value = "query", required = false) String query
+                                                  ) {
+
+        List<Song> result;
+        if (query != null) {
+            result = songService.searchSongs(query);
+        } else {
+            result = List.of();  // Return empty list if no query is provided
+        }
+
+        return ResponseEntity.ok(result);
+    }
 }
 
 
